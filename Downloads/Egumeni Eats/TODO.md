@@ -1,0 +1,5 @@
+- [x] Install dependencies with npm install
+- [x] Check if MongoDB is running, start if necessary
+- [x] Run seed.js to insert test data into database
+- [x] Start server.js and verify MongoDB connection
+- [x] Make test API call to retrieve data (e.g., login or get inventory)
