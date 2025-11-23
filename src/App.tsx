@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
 import { Services } from './components/Services';
@@ -30,11 +30,9 @@ function PublicWebsite() {
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<PublicWebsite />} />
-        <Route path="/admin/*" element={<AdminDashboard />} />
-      </Routes>
-    </Router>
+    <Routes>
+      <Route path="/" element={<PublicWebsite />} />
+      <Route path="/admin/*" element={<AdminDashboard />} />
+    </Routes>
   );
 }
