@@ -137,53 +137,58 @@ export function GalleryManager() {
     : images.filter(img => img.category === selectedCategory);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Gallery Management</h1>
-        <div className="flex space-x-4">
-          {!showNewCategory ? (
-            <button
-              onClick={() => setShowNewCategory(true)}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              New Category
-            </button>
-          ) : (
-            <div className="flex space-x-2">
-              <input
-                type="text"
-                placeholder="Category name"
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm"
-                onKeyPress={(e) => e.key === 'Enter' && createNewCategory()}
-              />
+    <div className="space-y-8">
+      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-2xl p-8 text-white shadow-2xl">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Gallery Management</h1>
+            <p className="text-blue-100">Manage your portfolio images and categories</p>
+          </div>
+          <div className="flex space-x-4">
+            {!showNewCategory ? (
               <button
-                onClick={createNewCategory}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
+                onClick={() => setShowNewCategory(true)}
+                className="inline-flex items-center px-6 py-3 border border-white/20 text-sm font-medium rounded-xl text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all hover:scale-105 shadow-lg"
               >
-                Create
+                <Plus className="w-5 h-5 mr-2" />
+                New Category
               </button>
-              <button
-                onClick={() => setShowNewCategory(false)}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md text-sm hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-            </div>
-          )}
+            ) : (
+              <div className="flex space-x-3">
+                <input
+                  type="text"
+                  placeholder="Category name"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  className="px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-200 text-sm backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white/50"
+                  onKeyPress={(e) => e.key === 'Enter' && createNewCategory()}
+                />
+                <button
+                  onClick={createNewCategory}
+                  className="px-6 py-3 bg-white text-blue-600 rounded-xl text-sm font-medium hover:bg-blue-50 transition-all hover:scale-105 shadow-lg"
+                >
+                  Create
+                </button>
+                <button
+                  onClick={() => setShowNewCategory(false)}
+                  className="px-6 py-3 bg-white/10 text-white rounded-xl text-sm font-medium hover:bg-white/20 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Category Filter */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-3">
         <button
           onClick={() => setSelectedCategory('all')}
-          className={`px-4 py-2 rounded-md text-sm font-medium ${
+          className={`px-6 py-3 rounded-xl text-sm font-medium transition-all shadow-lg ${
             selectedCategory === 'all'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white transform scale-105'
+              : 'bg-white text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 border border-blue-200'
           }`}
         >
           All ({images.length})
@@ -192,10 +197,10 @@ export function GalleryManager() {
           <button
             key={category.id}
             onClick={() => setSelectedCategory(category.id)}
-            className={`px-4 py-2 rounded-md text-sm font-medium ${
+            className={`px-6 py-3 rounded-xl text-sm font-medium transition-all shadow-lg ${
               selectedCategory === category.id
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white transform scale-105'
+                : 'bg-white text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 border border-blue-200'
             }`}
           >
             {category.name} ({category.count})
@@ -204,34 +209,44 @@ export function GalleryManager() {
       </div>
 
       {/* Upload Section */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Upload Images</h2>
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-          <div className="text-center">
-            <Upload className="mx-auto h-12 w-12 text-gray-400" />
-            <div className="mt-4">
-              <label htmlFor="file-upload" className="cursor-pointer">
-                <span className="mt-2 block text-sm font-medium text-gray-900">
-                  Upload images to {selectedCategory === 'all' ? 'selected category' : selectedCategory}
-                </span>
-                <input
-                  id="file-upload"
-                  name="file-upload"
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleFileUpload}
-                  disabled={uploading || selectedCategory === 'all'}
-                  className="sr-only"
-                />
-              </label>
-            </div>
-            {uploading && (
-              <div className="mt-4">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                <p className="mt-2 text-sm text-gray-600">Uploading...</p>
+      <div className="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6">
+          <h2 className="text-xl font-bold text-white">Upload Images</h2>
+          <p className="text-blue-100 mt-1">Add new images to your gallery</p>
+        </div>
+        <div className="p-8">
+          <div className="border-2 border-dashed border-blue-200 rounded-2xl p-8 bg-gradient-to-br from-blue-50/50 to-purple-50/50">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <Upload className="h-8 w-8 text-white" />
               </div>
-            )}
+              <div className="space-y-2">
+                <label htmlFor="file-upload" className="cursor-pointer">
+                  <span className="block text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+                    Upload images to {selectedCategory === 'all' ? 'selected category' : selectedCategory.replace(/-/g, ' ')}
+                  </span>
+                  <span className="block text-sm text-gray-500 mt-1">
+                    Click to browse or drag and drop files here
+                  </span>
+                  <input
+                    id="file-upload"
+                    name="file-upload"
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    disabled={uploading || selectedCategory === 'all'}
+                    className="sr-only"
+                  />
+                </label>
+              </div>
+              {uploading && (
+                <div className="mt-6">
+                  <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
+                  <p className="mt-3 text-sm font-medium text-blue-600">Uploading images...</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -239,35 +254,43 @@ export function GalleryManager() {
       {/* Images Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredImages.map((image) => (
-          <div key={image.id} className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="aspect-w-1 aspect-h-1">
+          <div key={image.id} className="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
+            <div className="relative aspect-square overflow-hidden">
               <img
                 src={image.url}
                 alt={image.name}
-                className="w-full h-48 object-cover"
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
               />
-            </div>
-            <div className="p-4">
-              <p className="text-sm font-medium text-gray-900 truncate">{image.name}</p>
-              <p className="text-xs text-gray-500">{image.category}</p>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <button
                 onClick={() => handleDeleteImage(image)}
-                className="mt-2 inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-red-700 bg-red-100 hover:bg-red-200"
+                className="absolute top-3 right-3 p-2 bg-red-500 text-white rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 shadow-lg"
+                title="Delete image"
               >
-                <Trash2 className="w-3 h-3 mr-1" />
-                Delete
+                <Trash2 className="w-4 h-4" />
               </button>
+            </div>
+            <div className="p-5">
+              <p className="text-sm font-semibold text-gray-900 truncate mb-1">{image.name}</p>
+              <p className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-lg inline-block font-medium">
+                {image.category.replace(/-/g, ' ')}
+              </p>
             </div>
           </div>
         ))}
       </div>
 
       {filteredImages.length === 0 && (
-        <div className="text-center py-12">
-          <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No images</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Get started by uploading some images to this category.
+        <div className="text-center py-16 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl border border-blue-100">
+          <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <ImageIcon className="h-10 w-10 text-white" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">No images found</h3>
+          <p className="text-gray-600 max-w-md mx-auto">
+            {selectedCategory === 'all'
+              ? "Your gallery is empty. Start by creating a category and uploading some images."
+              : `No images in the "${selectedCategory.replace(/-/g, ' ')}" category yet. Upload some images to get started.`
+            }
           </p>
         </div>
       )}
