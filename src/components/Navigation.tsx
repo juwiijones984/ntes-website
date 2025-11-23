@@ -1,14 +1,38 @@
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import logo from 'figma:asset/a35fb7689c0ce26682573f9bfcbf7c9fb873405a.png';
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const [pressTimer, setPressTimer] = useState<NodeJS.Timeout | null>(null);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     element?.scrollIntoView({ behavior: 'smooth' });
     setIsOpen(false);
+  };
+
+  const handleLogoMouseDown = () => {
+    const timer = setTimeout(() => {
+      navigate('/admin');
+    }, 2000); // 2 second long press
+    setPressTimer(timer);
+  };
+
+  const handleLogoMouseUp = () => {
+    if (pressTimer) {
+      clearTimeout(pressTimer);
+      setPressTimer(null);
+    }
+  };
+
+  const handleLogoMouseLeave = () => {
+    if (pressTimer) {
+      clearTimeout(pressTimer);
+      setPressTimer(null);
+    }
   };
 
   return (
@@ -18,7 +42,15 @@ export function Navigation() {
           <div className="flex items-center space-x-3">
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur-xl opacity-30"></div>
-              <img src={logo} alt="Nkundlande Tech Logo" className="h-16 w-auto relative z-10 drop-shadow-2xl" />
+              <img
+                src={logo}
+                alt="Nkundlande Tech Logo"
+                className="h-16 w-auto relative z-10 drop-shadow-2xl cursor-pointer"
+                onMouseDown={handleLogoMouseDown}
+                onMouseUp={handleLogoMouseUp}
+                onMouseLeave={handleLogoMouseLeave}
+                title="Hold for 2 seconds to access admin panel"
+              />
             </div>
           </div>
 
