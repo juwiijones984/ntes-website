@@ -148,7 +148,7 @@ export function GalleryManager() {
             {!showNewCategory ? (
               <button
                 onClick={() => setShowNewCategory(true)}
-                className="inline-flex items-center px-6 py-3 border border-white/20 text-sm font-medium rounded-xl text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all hover:scale-105 shadow-lg"
+                className="inline-flex items-center px-6 py-3 text-sm font-medium rounded-xl text-white bg-blue-900 hover:bg-blue-800 transition-all hover:scale-105 shadow-lg"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 New Category
@@ -165,13 +165,13 @@ export function GalleryManager() {
                 />
                 <button
                   onClick={createNewCategory}
-                  className="px-6 py-3 bg-white text-blue-600 rounded-xl text-sm font-medium hover:bg-blue-50 transition-all hover:scale-105 shadow-lg"
+                  className="px-6 py-3 bg-blue-900 text-white rounded-xl text-sm font-medium hover:bg-blue-800 transition-all hover:scale-105 shadow-lg"
                 >
                   Create
                 </button>
                 <button
                   onClick={() => setShowNewCategory(false)}
-                  className="px-6 py-3 bg-white/10 text-white rounded-xl text-sm font-medium hover:bg-white/20 transition-all"
+                  className="px-6 py-3 bg-gray-600 text-white rounded-xl text-sm font-medium hover:bg-gray-500 transition-all"
                 >
                   Cancel
                 </button>
@@ -187,8 +187,8 @@ export function GalleryManager() {
           onClick={() => setSelectedCategory('all')}
           className={`px-6 py-3 rounded-xl text-sm font-medium transition-all shadow-lg ${
             selectedCategory === 'all'
-              ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white transform scale-105'
-              : 'bg-white text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 border border-blue-200'
+              ? 'bg-blue-900 text-white transform scale-105'
+              : 'bg-blue-100 text-blue-900 hover:bg-blue-200 border border-blue-300'
           }`}
         >
           All ({images.length})
@@ -199,8 +199,8 @@ export function GalleryManager() {
             onClick={() => setSelectedCategory(category.id)}
             className={`px-6 py-3 rounded-xl text-sm font-medium transition-all shadow-lg ${
               selectedCategory === category.id
-                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white transform scale-105'
-                : 'bg-white text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 border border-blue-200'
+                ? 'bg-blue-900 text-white transform scale-105'
+                : 'bg-blue-100 text-blue-900 hover:bg-blue-200 border border-blue-300'
             }`}
           >
             {category.name} ({category.count})

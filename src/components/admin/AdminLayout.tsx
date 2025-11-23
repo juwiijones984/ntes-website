@@ -101,7 +101,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           <div className="border-t border-blue-100 p-4">
             <button
               onClick={handleLogout}
-              className="flex items-center w-full px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 hover:text-red-700 rounded-lg transition-all"
+              className="flex items-center w-full px-4 py-3 text-sm font-medium text-white bg-blue-900 hover:bg-blue-800 rounded-lg transition-all"
             >
               <LogOut className="w-5 h-5 mr-3" />
               Logout
@@ -127,7 +127,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </h1>
             <button
               onClick={handleLogout}
-              className="text-red-500 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-all"
+              className="text-blue-900 hover:text-white hover:bg-blue-900 p-2 rounded-lg transition-all"
               aria-label="Logout"
             >
               <LogOut className="w-6 h-6" />
