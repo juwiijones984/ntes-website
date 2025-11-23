@@ -75,16 +75,45 @@ npm run dev
 
 4. Open [http://localhost:3001](http://localhost:3001) in your browser
 
+## 👨‍💼 Admin System
+
+The website includes a comprehensive admin panel for content management:
+
+### Admin Features
+
+- **Secure Authentication**: Firebase Authentication for admin access
+- **Gallery Management**: Upload, organize, and delete images by category
+- **Content Editing**: Edit all website text content in real-time
+- **Dynamic Sections**: Add new content sections with a single click
+- **File Upload**: Direct upload to Firebase Storage from device
+- **Category Management**: Create and manage image categories
+
+### Accessing Admin Panel
+
+1. Navigate to `/admin` on your website
+2. Log in with admin credentials
+3. Access gallery management and content editing tools
+
+### Firebase Setup Required
+
+Before using the admin features, set up Firebase:
+
+1. Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
+2. Enable Authentication and Firestore Database
+3. Enable Storage for file uploads
+4. Update the configuration in `src/firebase.ts`
+5. Create an admin user in Firebase Authentication
+
 ## 📸 Gallery System
 
-The gallery automatically discovers and displays images from the `src/assets/` folder structure:
+The gallery dynamically loads images from Firebase Storage and displays them by category:
 
-### Adding New Images
+### Admin Gallery Management
 
-1. Place images in appropriate service folders under `src/assets/`
-2. Supported formats: JPG, PNG, JPEG
-3. Images are automatically categorized and displayed
-4. No code changes required - the gallery updates dynamically
+- **Upload Images**: Drag & drop or select multiple files
+- **Create Categories**: Add new service categories on the fly
+- **Organize Content**: Move images between categories
+- **Delete Images**: Remove unwanted content safely
 
 ### Current Gallery Categories
 
