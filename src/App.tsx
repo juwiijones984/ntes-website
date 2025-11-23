@@ -1,3 +1,4 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
 import { Services } from './components/Services';
@@ -8,8 +9,9 @@ import { Gallery } from './components/Gallery';
 import { Certifications } from './components/Certifications';
 import { Contact } from './components/Contact';
 import { Navigation } from './components/Navigation';
+import { AdminDashboard } from './components/admin/AdminDashboard';
 
-export default function App() {
+function PublicWebsite() {
   return (
     <div className="min-h-screen bg-white">
       <Navigation />
@@ -23,5 +25,16 @@ export default function App() {
       <Certifications />
       <Contact />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<PublicWebsite />} />
+        <Route path="/admin/*" element={<AdminDashboard />} />
+      </Routes>
+    </Router>
   );
 }

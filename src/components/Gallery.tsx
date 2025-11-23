@@ -10,47 +10,84 @@ interface GalleryItem {
   description: string;
 }
 
-// Use Vite's recommended `query: '?url', import: 'default'` to get asset URLs
-// @ts-ignore - `import.meta.glob` is provided by Vite at build time
-const imageModules = import.meta.glob('./src/assets/*/**/*.{jpg,png,jpeg,JPG,PNG,JPEG}', { query: '?url', import: 'default' });
-
-// Build gallery items dynamically from files under `/src/assets`
-const galleryItems: GalleryItem[] = [];
-const folderSet = new Set<string>();
+import { useState, useEffect } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from './firebase';
 
 const humanize = (s: string) => s.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-
-Object.entries(imageModules).forEach(([path, url]) => {
-  // Normalize keys that might start with './' or '/'
-  const rel = path.replace(/^(?:\.\/|\/)?src\/assets\//, '');
-  const parts = rel.split('/');
-  const folder = parts.length > 1 ? parts[0] : 'root';
-  folderSet.add(folder);
-  const filename = parts[parts.length - 1];
-  const title = filename.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ');
-  galleryItems.push({
-    id: galleryItems.length + 1,
-    title: humanize(title),
-    category: folder,
-    image: url as string,
-    description: `Project photo from ${humanize(folder)}`
-  });
-});
-
-const dynamicFolders: { slug: string; name: string; folder: string; icon: any; gradient: string }[] = Array.from(folderSet).map((f) => ({ slug: f, name: humanize(f), folder: f, icon: FileText, gradient: 'from-gray-600 to-gray-800' }));
 
 export function Gallery() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const categories = [
-    { id: 'all', name: 'All Work', icon: FileText, gradient: 'from-gray-600 to-gray-800' },
-    ...dynamicFolders.map(f => ({ id: f.slug, name: f.name, icon: f.icon, gradient: f.gradient }))
-  ];
+  useEffect(() => {
+    loadGallery();
+  }, []);
 
-  const filteredItems = selectedCategory === 'all' 
-    ? galleryItems 
+  const loadGallery = async () => {
+    try {
+      const galleryRef = collection(db, 'gallery');
+      const snapshot = await getDocs(galleryRef);
+      const items: GalleryItem[] = [];
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        items.push({
+          id: parseInt(doc.id) || items.length + 1,
+          title: data.name?.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ') || 'Untitled',
+          category: data.category || 'uncategorized',
+          image: data.url || '',
+          description: `Project photo from ${humanize(data.category || 'uncategorized')}`
+        });
+      });
+
+      setGalleryItems(items);
+
+      // Create categories
+      const categoryMap = new Map<string, number>();
+      items.forEach((item) => {
+        categoryMap.set(item.category, (categoryMap.get(item.category) || 0) + 1);
+      });
+
+      const dynamicCategories = Array.from(categoryMap.entries()).map(([slug, count]) => ({
+        id: slug,
+        name: humanize(slug),
+        icon: FileText,
+        gradient: 'from-gray-600 to-gray-800',
+        count
+      }));
+
+      setCategories([
+        { id: 'all', name: 'All Work', icon: FileText, gradient: 'from-gray-600 to-gray-800' },
+        ...dynamicCategories
+      ]);
+
+    } catch (error) {
+      console.error('Error loading gallery:', error);
+      // Fallback to empty state
+      setCategories([{ id: 'all', name: 'All Work', icon: FileText, gradient: 'from-gray-600 to-gray-800' }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredItems = selectedCategory === 'all'
+    ? galleryItems
     : galleryItems.filter(item => item.category === selectedCategory);
+
+  if (loading) {
+    return (
+      <section id="gallery" className="py-32 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading gallery...</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="gallery" className="py-32 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden">
