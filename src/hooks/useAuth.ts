@@ -20,7 +20,22 @@ export function useAuth() {
       await signInWithEmailAndPassword(auth, email, password);
       return { success: true };
     } catch (error: any) {
-      return { success: false, error: error.message };
+      let errorMessage = error.message;
+
+      // Provide more user-friendly error messages
+      if (error.code === 'auth/user-not-found') {
+        errorMessage = 'No admin account found. Please create an account first.';
+      } else if (error.code === 'auth/wrong-password') {
+        errorMessage = 'Incorrect password. Please try again.';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = 'Invalid email address.';
+      } else if (error.code === 'auth/configuration-not-found') {
+        errorMessage = 'Firebase project not configured. Please set up Firebase first.';
+      } else if (error.code === 'auth/project-not-found') {
+        errorMessage = 'Firebase project not found. Please check your configuration.';
+      }
+
+      return { success: false, error: errorMessage };
     }
   };
 
