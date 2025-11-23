@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
 import { Services } from './components/Services';
@@ -9,7 +10,10 @@ import { Gallery } from './components/Gallery';
 import { Certifications } from './components/Certifications';
 import { Contact } from './components/Contact';
 import { Navigation } from './components/Navigation';
-import { AdminDashboard } from './components/admin/AdminDashboard';
+import { ContentSkeleton } from './components/ui/skeleton';
+
+// Lazy load admin components for better performance
+const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard'));
 
 function PublicWebsite() {
   return (
@@ -32,7 +36,14 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<PublicWebsite />} />
-      <Route path="/admin/*" element={<AdminDashboard />} />
+      <Route
+        path="/admin/*"
+        element={
+          <Suspense fallback={<ContentSkeleton />}>
+            <AdminDashboard />
+          </Suspense>
+        }
+      />
     </Routes>
   );
 }

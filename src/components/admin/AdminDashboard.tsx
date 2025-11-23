@@ -5,7 +5,7 @@ import { GalleryManager } from './GalleryManager';
 import { ContentManager } from './ContentManager';
 import { useAuth } from '../../hooks/useAuth';
 
-export function AdminDashboard() {
+export default function AdminDashboard() {
   const { user, loading } = useAuth();
 
   if (loading) {

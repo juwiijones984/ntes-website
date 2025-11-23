@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ZoomIn, Palette, FileText } from 'lucide-react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
+import { GallerySkeleton } from './ui/skeleton';
 
 interface GalleryItem {
   id: number;
@@ -79,9 +80,42 @@ export function Gallery() {
   if (loading) {
     return (
       <section id="gallery" className="py-32 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading gallery...</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <div className="inline-block mb-4">
+              <div className="flex items-center space-x-2 bg-gradient-to-r from-blue-600/10 to-purple-600/10 border border-blue-200 rounded-full px-6 py-2">
+                <Palette className="w-5 h-5 text-blue-600" />
+                <span className="text-sm text-blue-900">Our Portfolio</span>
+              </div>
+            </div>
+            <h2 className="text-5xl md:text-6xl mb-6 bg-gradient-to-r from-blue-900 via-blue-700 to-purple-900 bg-clip-text text-transparent">
+              Work Gallery
+            </h2>
+            <div className="w-32 h-1.5 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto rounded-full shadow-lg shadow-blue-500/50"></div>
+            <p className="text-lg text-gray-600 mt-6 max-w-2xl mx-auto">
+              Explore our portfolio of completed projects including graphic design, electrical installations, tech solutions, and business documentation.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="flex flex-wrap justify-center gap-4 mb-12"
+          >
+            <div className="px-4 py-2 bg-gray-200 text-gray-500 rounded-md">
+              Loading categories...
+            </div>
+          </motion.div>
+
+          <GallerySkeleton />
         </div>
       </section>
     );
