@@ -39,6 +39,28 @@ export function GalleryManager() {
     loadGallery();
   }, []);
 
+  // Test Firebase connection
+  const testFirebaseConnection = async () => {
+    try {
+      // Test Firestore connection
+      const testDoc = await addDoc(collection(db, 'test'), {
+        test: true,
+        timestamp: new Date()
+      });
+      await deleteDoc(doc(db, 'test', testDoc.id));
+      console.log('✅ Firebase Firestore connection successful');
+
+      // Test Storage connection
+      const testRef = ref(storage, 'test.txt');
+      console.log('✅ Firebase Storage connection successful');
+
+      return true;
+    } catch (error) {
+      console.error('❌ Firebase connection failed:', error);
+      return false;
+    }
+  };
+
   const loadGallery = async () => {
     try {
       // Load images from Firestore
@@ -214,10 +236,11 @@ export function GalleryManager() {
             i === index ? { ...p, progress: 100, status: 'completed' as const } : p
           ));
 
-        } catch (error) {
+        } catch (error: any) {
           console.error(`Error uploading ${file.name}:`, error);
+          const errorMessage = error?.message || error?.code || 'Upload failed';
           setUploadProgress(prev => prev.map((p, i) =>
-            i === index ? { ...p, status: 'error' as const, error: 'Upload failed' } : p
+            i === index ? { ...p, status: 'error' as const, error: errorMessage } : p
           ));
         }
       });
@@ -294,6 +317,13 @@ export function GalleryManager() {
             <p className="text-blue-100">Manage your portfolio images and categories</p>
           </div>
           <div className="flex space-x-4">
+            <button
+              onClick={testFirebaseConnection}
+              className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl text-blue-900 bg-blue-100 hover:bg-blue-200 transition-all hover:scale-105 shadow-lg"
+              title="Test Firebase connection"
+            >
+              🔗 Test Connection
+            </button>
             {!showNewCategory ? (
               <button
                 onClick={() => setShowNewCategory(true)}
