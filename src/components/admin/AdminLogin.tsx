@@ -153,7 +153,7 @@ export function AdminLogin() {
               <button
                 type="submit"
                 disabled={loading || !firebaseConfigured}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                className="w-full flex justify-center py-3 px-6 border border-transparent rounded-xl shadow-lg text-sm font-medium text-white bg-blue-900 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-all hover:scale-105"
               >
                 {loading ? (showSignup ? 'Creating account...' : 'Signing in...') : (showSignup ? 'Create Admin Account' : 'Sign in')}
               </button>
@@ -163,7 +163,7 @@ export function AdminLogin() {
                   type="button"
                   onClick={handleDemoLogin}
                   disabled={loading}
-                  className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                  className="w-full flex justify-center py-3 px-6 border border-blue-300 rounded-xl shadow-lg text-sm font-medium text-blue-900 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-all hover:scale-105"
                 >
                   {loading ? 'Setting up demo...' : 'Try Demo Account'}
                 </button>

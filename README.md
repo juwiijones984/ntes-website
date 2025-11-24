@@ -133,17 +133,57 @@ The gallery dynamically loads images from Firebase Storage and displays them by 
 
 ```bash
 npm run build
+npm run preview  # Preview production build locally
 ```
 
-### Deploy to Render
+### Production Build Features
 
-1. Connect your GitHub repository to Render
-2. Set build settings:
+- **Code Splitting**: Optimized chunk splitting for better performance
+- **Minification**: ESBuild minification for smaller bundle size
+- **Asset Optimization**: Automatic image optimization and compression
+- **Tree Shaking**: Removes unused code automatically
+
+### Deploy to Render (Static Site)
+
+1. **Connect Repository**:
+   - Go to [render.com](https://render.com)
+   - Connect your GitHub repository
+   - Select "Static Site" as service type
+
+2. **Build Settings**:
    - **Build Command**: `npm run build`
    - **Publish Directory**: `build`
-3. Deploy automatically on every push to main branch
+   - **Node Version**: `18` or higher
+
+3. **Environment Variables** (if using Firebase):
+   - Add your Firebase config variables as environment variables
+
+4. **Deploy**:
+   - Push to main branch to trigger automatic deployment
+   - Or manually deploy from Render dashboard
 
 **Live Site**: [https://ntes-website.onrender.com](https://ntes-website.onrender.com)
+
+### Alternative Deployment Options
+
+#### Vercel
+```bash
+npm i -g vercel
+vercel --prod
+```
+
+#### Netlify
+```bash
+npm i -g netlify-cli
+netlify deploy --prod --dir=build
+```
+
+#### GitHub Pages
+```bash
+npm i -g gh-pages
+npm run build
+gh-pages -d build
+```
 
 ## 🎨 Customization
 

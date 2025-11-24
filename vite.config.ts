@@ -54,6 +54,17 @@
     build: {
       target: 'esnext',
       outDir: 'build',
+      minify: 'esbuild',
+      sourcemap: false,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom'],
+            firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
+            ui: ['framer-motion', 'lucide-react'],
+          },
+        },
+      },
     },
     server: {
       port: 3000,
