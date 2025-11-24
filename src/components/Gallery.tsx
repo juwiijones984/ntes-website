@@ -43,6 +43,41 @@ export function Gallery() {
         });
       });
 
+      // Add sample images if no images exist
+      if (items.length === 0) {
+        const sampleItems: GalleryItem[] = [
+          {
+            id: 1,
+            title: 'Electrical Installation',
+            category: 'house-wiring',
+            image: 'https://images.unsplash.com/photo-1621905252472-943afaa20e20?w=400&h=300&fit=crop',
+            description: 'Professional house wiring installation services'
+          },
+          {
+            id: 2,
+            title: 'Graphic Design',
+            category: 'graphic-designing',
+            image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop',
+            description: 'Creative graphic design and branding solutions'
+          },
+          {
+            id: 3,
+            title: 'ICT Solutions',
+            category: 'ict-projects',
+            image: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=400&h=300&fit=crop',
+            description: 'Advanced information and communication technology implementations'
+          },
+          {
+            id: 4,
+            title: 'Business Solutions',
+            category: 'business-solutions',
+            image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop',
+            description: 'Comprehensive business consulting and solutions'
+          }
+        ];
+        items.push(...sampleItems);
+      }
+
       setGalleryItems(items);
 
       // Create categories
@@ -190,52 +225,95 @@ export function Gallery() {
 
         {/* Gallery Grid */}
         <AnimatePresence mode="wait">
-          <motion.div
-            key={selectedCategory}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            {filteredItems.map((item, index) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group relative cursor-pointer"
-                onClick={() => setSelectedImage(item)}
-              >
-                {/* 3D shadow effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-opacity"></div>
+          {filteredItems.length > 0 ? (
+            <motion.div
+              key={selectedCategory}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+            >
+              {filteredItems.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="group relative cursor-pointer"
+                  onClick={() => setSelectedImage(item)}
+                >
+                  {/* 3D shadow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-opacity"></div>
 
-                <div className="relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-2 overflow-hidden border border-gray-100">
-                  {/* Image container with overlay */}
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center border-2 border-white/40">
-                          <ZoomIn className="w-8 h-8 text-white" />
+                  <div className="relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-2 overflow-hidden border border-gray-100">
+                    {/* Image container with overlay */}
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                        onError={(e) => {
+                          console.error('Image failed to load:', item.image);
+                          // Hide the broken image
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-16 h-16 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center border-2 border-white/40">
+                            <ZoomIn className="w-8 h-8 text-white" />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Content */}
-                  <div className="p-6">
-                    <h3 className="text-xl mb-2 text-gray-900">{item.title}</h3>
-                    <p className="text-gray-600 text-sm">{item.description}</p>
+                    {/* Content */}
+                    <div className="p-6">
+                      <h3 className="text-xl mb-2 text-gray-900">{item.title}</h3>
+                      <p className="text-gray-600 text-sm">{item.description}</p>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center py-16"
+            >
+              <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Palette className="w-12 h-12 text-blue-600" />
+              </div>
+              <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+                {selectedCategory === 'all' ? 'No Images Yet' : `No Images in ${categories.find(c => c.id === selectedCategory)?.name}`}
+              </h3>
+              <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                {selectedCategory === 'all'
+                  ? 'Images will appear here once uploaded through the admin panel. Access the admin dashboard to start adding your portfolio images.'
+                  : `No images have been uploaded to the ${categories.find(c => c.id === selectedCategory)?.name.toLowerCase()} category yet.`
+                }
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button
+                  onClick={() => window.open('/admin', '_blank')}
+                  className="inline-flex items-center px-6 py-3 bg-blue-900 text-white rounded-xl font-medium hover:bg-blue-800 transition-all hover:scale-105 shadow-lg"
+                >
+                  <Palette className="w-5 h-5 mr-2" />
+                  Go to Admin Panel
+                </button>
+                {selectedCategory !== 'all' && (
+                  <button
+                    onClick={() => setSelectedCategory('all')}
+                    className="inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-all"
+                  >
+                    View All Categories
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
 
         {/* Modal/Lightbox */}
