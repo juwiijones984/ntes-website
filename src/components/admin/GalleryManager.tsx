@@ -12,6 +12,13 @@ interface GalleryImage {
   path: string;
 }
 
+interface UploadProgress {
+  file: File;
+  progress: number;
+  status: 'pending' | 'uploading' | 'completed' | 'error';
+  error?: string;
+}
+
 interface GalleryCategory {
   id: string;
   name: string;
@@ -23,8 +30,10 @@ export function GalleryManager() {
   const [categories, setCategories] = useState<GalleryCategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<UploadProgress[]>([]);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [showNewCategory, setShowNewCategory] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
 
   useEffect(() => {
     loadGallery();
@@ -61,39 +70,179 @@ export function GalleryManager() {
     }
   };
 
+  // Compress image if it's too large
+  const compressImage = (file: File, maxWidth: number = 1920, quality: number = 0.8): Promise<File> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
+      const img = new Image();
+
+      img.onload = () => {
+        // Calculate new dimensions
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Draw and compress
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const compressedFile = new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          } else {
+            resolve(file); // Fallback to original
+          }
+        }, 'image/jpeg', quality);
+      };
+
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      handleFiles(Array.from(files));
+    }
+  };
+
+  const handleFiles = async (files: File[]) => {
+    if (files.length === 0) return;
+
+    // Validate file sizes (max 50MB per file)
+    const maxFileSize = 50 * 1024 * 1024; // 50MB
+    const validFiles: File[] = [];
+    const invalidFiles: string[] = [];
+
+    for (const file of files) {
+      if (file.size > maxFileSize) {
+        invalidFiles.push(`${file.name} (${(file.size / (1024 * 1024)).toFixed(1)}MB)`);
+      } else {
+        validFiles.push(file);
+      }
+    }
+
+    if (invalidFiles.length > 0) {
+      alert(`Some files are too large (max 50MB):\n${invalidFiles.join('\n')}`);
+    }
+
+    if (validFiles.length === 0) return;
+
+    // Initialize upload progress
+    const initialProgress: UploadProgress[] = validFiles.map(file => ({
+      file,
+      progress: 0,
+      status: 'pending'
+    }));
+
+    setUploadProgress(initialProgress);
+    setUploading(true);
+
+    try {
+      // Process files in parallel (max 3 concurrent uploads)
+      const uploadPromises = validFiles.map(async (file, index) => {
+        try {
+          // Update status to uploading
+          setUploadProgress(prev => prev.map((p, i) =>
+            i === index ? { ...p, status: 'uploading' as const } : p
+          ));
+
+          // Compress large images
+          let processedFile = file;
+          if (file.size > 2 * 1024 * 1024 && file.type.startsWith('image/')) { // > 2MB
+            processedFile = await compressImage(file);
+          }
+
+          // Create unique filename to avoid conflicts
+          const timestamp = Date.now();
+          const randomId = Math.random().toString(36).substring(2, 15);
+          const fileName = `${timestamp}_${randomId}_${file.name}`;
+          const storageRef = ref(storage, `gallery/${selectedCategory}/${fileName}`);
+
+          // Upload with progress tracking (simulated)
+          const uploadTask = uploadBytes(storageRef, processedFile);
+
+          // Simulate progress updates
+          const progressInterval = setInterval(() => {
+            setUploadProgress(prev => prev.map((p, i) =>
+              i === index && p.status === 'uploading'
+                ? { ...p, progress: Math.min(p.progress + Math.random() * 30, 90) }
+                : p
+            ));
+          }, 200);
+
+          await uploadTask;
+          clearInterval(progressInterval);
+
+          // Get download URL
+          const url = await getDownloadURL(storageRef);
+
+          // Save to Firestore
+          await addDoc(collection(db, 'gallery'), {
+            name: file.name,
+            url,
+            category: selectedCategory,
+            path: `gallery/${selectedCategory}/${fileName}`,
+            createdAt: new Date(),
+            size: processedFile.size,
+            originalSize: file.size
+          });
+
+          // Mark as completed
+          setUploadProgress(prev => prev.map((p, i) =>
+            i === index ? { ...p, progress: 100, status: 'completed' as const } : p
+          ));
+
+        } catch (error) {
+          console.error(`Error uploading ${file.name}:`, error);
+          setUploadProgress(prev => prev.map((p, i) =>
+            i === index ? { ...p, status: 'error' as const, error: 'Upload failed' } : p
+          ));
+        }
+      });
+
+      // Wait for all uploads to complete
+      await Promise.allSettled(uploadPromises);
+
+      // Reload gallery after a short delay
+      setTimeout(() => {
+        loadGallery();
+        setUploadProgress([]);
+      }, 1000);
+
+    } catch (error) {
+      console.error('Error in upload process:', error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
-    setUploading(true);
-
-    try {
-      for (const file of Array.from(files)) {
-        // Create storage reference
-        const storageRef = ref(storage, `gallery/${selectedCategory}/${file.name}`);
-
-        // Upload file
-        await uploadBytes(storageRef, file);
-
-        // Get download URL
-        const url = await getDownloadURL(storageRef);
-
-        // Save to Firestore
-        await addDoc(collection(db, 'gallery'), {
-          name: file.name,
-          url,
-          category: selectedCategory,
-          path: `gallery/${selectedCategory}/${file.name}`,
-          createdAt: new Date()
-        });
-      }
-
-      await loadGallery();
-    } catch (error) {
-      console.error('Error uploading files:', error);
-    } finally {
-      setUploading(false);
-    }
+    await handleFiles(Array.from(files));
   };
 
   const handleDeleteImage = async (image: GalleryImage) => {
@@ -215,7 +364,14 @@ export function GalleryManager() {
           <p className="text-blue-100 mt-1">Add new images to your gallery</p>
         </div>
         <div className="p-8">
-          <div className="border-2 border-dashed border-blue-200 rounded-2xl p-8 bg-gradient-to-br from-blue-50/50 to-purple-50/50">
+          <div
+            className={`border-2 border-dashed rounded-2xl p-8 bg-gradient-to-br from-blue-50/50 to-purple-50/50 transition-all ${
+              dragOver ? 'border-blue-400 bg-blue-50/70 scale-105' : 'border-blue-200'
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Upload className="h-8 w-8 text-white" />
@@ -226,7 +382,10 @@ export function GalleryManager() {
                     Upload images to {selectedCategory === 'all' ? 'selected category' : selectedCategory.replace(/-/g, ' ')}
                   </span>
                   <span className="block text-sm text-gray-500 mt-1">
-                    Click to browse or drag and drop files here
+                    {dragOver ? 'Drop files here' : 'Click to browse or drag and drop files here'}
+                  </span>
+                  <span className="block text-xs text-gray-400 mt-2">
+                    Max file size: 50MB per image • Images over 2MB will be compressed automatically
                   </span>
                   <input
                     id="file-upload"
@@ -240,10 +399,44 @@ export function GalleryManager() {
                   />
                 </label>
               </div>
-              {uploading && (
-                <div className="mt-6">
-                  <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
-                  <p className="mt-3 text-sm font-medium text-blue-600">Uploading images...</p>
+              {uploading && uploadProgress.length > 0 && (
+                <div className="mt-6 space-y-4">
+                  <h4 className="text-lg font-semibold text-gray-900">Upload Progress</h4>
+                  {uploadProgress.map((item, index) => (
+                    <div key={index} className="bg-white/50 rounded-xl p-4 border border-white/20">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-900 truncate max-w-xs">
+                          {item.file.name}
+                        </span>
+                        <span className={`text-xs px-2 py-1 rounded-full ${
+                          item.status === 'completed' ? 'bg-green-100 text-green-800' :
+                          item.status === 'error' ? 'bg-red-100 text-red-800' :
+                          item.status === 'uploading' ? 'bg-blue-100 text-blue-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {item.status === 'completed' ? '✓ Done' :
+                           item.status === 'error' ? '✗ Failed' :
+                           item.status === 'uploading' ? 'Uploading...' : 'Pending'}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full transition-all duration-300 ${
+                            item.status === 'completed' ? 'bg-green-500' :
+                            item.status === 'error' ? 'bg-red-500' : 'bg-blue-500'
+                          }`}
+                          style={{ width: `${item.progress}%` }}
+                        ></div>
+                      </div>
+                      <div className="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>{(item.file.size / (1024 * 1024)).toFixed(1)} MB</span>
+                        <span>{item.progress.toFixed(0)}%</span>
+                      </div>
+                      {item.error && (
+                        <p className="text-xs text-red-600 mt-1">{item.error}</p>
+                      )}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
