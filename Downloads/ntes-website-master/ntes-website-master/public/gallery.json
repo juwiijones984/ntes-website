@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "title": "Electrical & Auto-Electrical Services",
+    "category": "electrical",
+    "image": "/gallery/Electrical & Auto-Electrical Services.png",
+    "description": "Professional electrical and auto-electrical services"
+  },
+  {
+    "id": 2,
+    "title": "Graphic Designing",
+    "category": "graphic-designing",
+    "image": "/gallery/Graphic Designing.png",
+    "description": "Creative graphic design solutions"
+  },
+  {
+    "id": 3,
+    "title": "Hardware Upgrade and Repair",
+    "category": "hardware",
+    "image": "/gallery/Hardware Upgrade and Repair.png",
+    "description": "Hardware upgrade and repair services"
+  },
+  {
+    "id": 4,
+    "title": "House Wiring & Fault Finding",
+    "category": "house-wiring",
+    "image": "/gallery/House Wiring & Fault Finding.png",
+    "description": "House wiring and fault finding services"
+  },
+  {
+    "id": 5,
+    "title": "ICT & IoT Solutions",
+    "category": "ict",
+    "image": "/gallery/ICT & IoT Solutions.mp4",
+    "description": "Information and communication technology solutions"
+  },
+  {
+    "id": 6,
+    "title": "Pumps Installation & Maintenance",
+    "category": "pumps",
+    "image": "/gallery/Pumps Installation & Maintanance.png",
+    "description": "Pumps installation and maintenance services"
+  },
+  {
+    "id": 7,
+    "title": "Smart & Organic Agriculture",
+    "category": "agriculture",
+    "image": "/gallery/Smart & Organic Agriculture.png",
+    "description": "Smart and organic agriculture solutions"
+  },
+  {
+    "id": 8,
+    "title": "Smart Business Solution & Innovation",
+    "category": "business",
+    "image": "/gallery/Smart Business Solution & Innovation.png",
+    "description": "Smart business solutions and innovations"
+  }
+]
