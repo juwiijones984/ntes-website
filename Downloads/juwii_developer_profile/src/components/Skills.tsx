@@ -22,14 +22,15 @@ export function Skills() {
   ];
 
   return (
-    <div className="min-h-screen py-20 px-4 relative z-10">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen py-32 px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col items-center justify-center">
+      <div className="text-center max-w-5xl w-full">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+
+          className="text-center mb-20"
         >
           <h2 className="text-4xl md:text-6xl mb-6 font-orbitron">
             <span className="bg-gradient-to-r from-[#00BFA6] to-[#00B8D9] bg-clip-text text-transparent">
@@ -48,6 +49,7 @@ export function Skills() {
           className="mb-20"
         >
           <h3 className="text-3xl mb-8 text-center text-[#00BFA6]">Technical Skills</h3>
+
           <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
             {technicalSkills.map((category, index) => {
               const Icon = category.icon;
@@ -59,15 +61,15 @@ export function Skills() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   viewport={{ once: true }}
                   whileHover={{ y: -5 }}
-                  className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-xl border border-gray-700 hover:border-[#00BFA6] transition-all"
+                  className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-2xl border border-gray-700 hover:border-[#00BFA6] transition-all min-h-[200px] flex flex-col items-center text-center"
                 >
-                  <div className="flex items-center gap-3 mb-4">
+                  <div className="flex flex-col items-center gap-3 mb-4">
                     <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-[#00BFA6] to-[#00B8D9] flex items-center justify-center">
                       <Icon size={20} />
                     </div>
-                    <h4 className="text-xl text-[#00BFA6]">{category.category}</h4>
+                    <h4 className="text-xl text-[#00BFA6] text-center">{category.category}</h4>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 justify-center">
                     {category.skills.map((skill, i) => (
                       <span
                         key={i}
@@ -91,6 +93,8 @@ export function Skills() {
           viewport={{ once: true }}
         >
           <h3 className="text-3xl mb-8 text-center text-[#00B8D9]">Soft Skills</h3>
+
+
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
             {softSkills.map((skill, index) => {
               const Icon = skill.icon;
@@ -102,7 +106,7 @@ export function Skills() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   viewport={{ once: true }}
                   whileHover={{ scale: 1.05, rotateY: 5 }}
-                  className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-xl border border-gray-700 hover:border-[#00B8D9] transition-all text-center"
+                  className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-2xl border border-gray-700 hover:border-[#00B8D9] transition-all text-center"
                 >
                   <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${skill.color} flex items-center justify-center mx-auto mb-4`}>
                     <Icon size={28} />
@@ -117,3 +121,4 @@ export function Skills() {
     </div>
   );
 }
+
